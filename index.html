@@ -14,11 +14,6 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
         .container {
             text-align: center;
         }
@@ -59,17 +54,6 @@
     </style>
 </head>
 <body>
-    <div class="language-selector">
-        <select id="language" onchange="changeLanguage()">
-            <option value="fr">Français</option>
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="de">Deutsch</option>
-            <option value="zh">中文</option>
-            <option value="ar">العربية</option>
-            <option value="ru">Русский</option>
-        </select>
-    </div>
     <div class="container">
         <img id="logo" src="logo.png" alt="Logo HedgeFundBanque">
         <form id="login-form">
@@ -122,20 +106,6 @@
 
             document.querySelector('.progress').style.display = 'block';
             message.style.display = 'block';
-            localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
-        }
-
-        function changeLanguage() {
-            const language = document.getElementById('language').value;
-            // Logique pour changer la langue de l'interface
-            // À implémenter selon vos besoins spécifiques
-        }
-
-        window.onload = function() {
-            const storedUsedPasswords = localStorage.getItem('usedPasswords');
-            if (storedUsedPasswords) {
-                usedPasswords = JSON.parse(storedUsedPasswords);
-            }
         }
     </script>
 </body>
