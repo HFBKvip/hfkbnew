@@ -13,13 +13,60 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            position: relative;
+            background-color: white;
+            color: darkblue;
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .container {
             text-align: center;
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        #logo {
-            width: 150px;
+        #small-logo {
+            width: 50px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        #title {
+            font-family: 'Garamond', serif;
+            color: navy;
+            font-size: 16px;
+            text-transform: uppercase;
+            position: absolute;
+            top: 70px;
+            left: 10px;
+        }
+        #language-select {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #loader {
+            display: none;
             margin-bottom: 20px;
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            background-color: darkblue;
+            border-radius: 50%;
+            display: inline-block;
+            animation: dot-blink 1s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes dot-blink {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
         }
         #login-form {
             display: flex;
@@ -30,41 +77,63 @@
             margin: 10px 0;
             padding: 10px;
             width: 200px;
+            border: 2px solid darkblue;
+            border-radius: 5px;
         }
         button {
             padding: 10px 20px;
             cursor: pointer;
+            background-color: darkblue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: navy;
         }
         #message {
             display: none;
             margin-top: 20px;
         }
-        .progress {
-            width: 50%;
-            height: 10px;
-            background: lightgrey;
-            margin-top: 20px;
-            display: none;
-        }
-        .progress-bar {
-            width: 0;
-            height: 100%;
-            background: green;
+        p, a {
+            color: darkblue;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img id="logo" src="logo.png" alt="Logo HedgeFundBanque">
+        <img id="small-logo" src="path_to_your_image/small-logo.png" alt="Small Logo">
+        <div id="title">HFBK</div>
+        <div id="language-select">
+            <select id="language-dropdown">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+                <option value="zh">中文</option>
+                <option value="ar">العربية</option>
+                <option value="ru">Русский</option>
+                <option value="pt">Português</option>
+                <option value="hi">हिन्दी</option>
+                <option value="bn">বাংলা</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+            </select>
+        </div>
+        <div id="loader">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
         <form id="login-form">
             <input type="email" id="email" placeholder="Email" required>
             <input type="password" id="password" placeholder="Mot de passe" required>
-            <button type="button" onclick="login()">OK</button>
+            <button type="button" onclick="showMessageAndLogin()">OK</button>
         </form>
-        <div class="progress">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
         <p id="message"></p>
+        <p id="contact-message" style="display:none;">Pour avoir accès à votre compte HedgeFundBanque, contactez l'équipe technique à <a href="mailto:hfbks9619@gmail.com">hfbks9619@gmail.com</a> ou entrez en contact avec le service client temporaire.</p>
+        <p id="pre-login-message" style="display:none;">Merci de patienter pendant la vérification de vos informations. Cela peut prendre jusqu'à 15 secondes.</p>
     </div>
     <script>
         const validPasswords = [
@@ -81,31 +150,51 @@
 
         const usedPasswords = {};
 
+        function showMessageAndLogin() {
+            const preLoginMessage = document.getElementById('pre-login-message');
+            preLoginMessage.style.display = 'block';
+
+            setTimeout(() => {
+                preLoginMessage.style.display = 'none';
+                login();
+            }, 5000); // Message display time before login attempt
+        }
+
         function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const progressBar = document.getElementById('progress-bar');
+            const loader = document.getElementById('loader');
             const message = document.getElementById('message');
+            const contactMessage = document.getElementById('contact-message');
 
-            if (validPasswords.includes(password)) {
-                if (!usedPasswords[password]) {
-                    usedPasswords[password] = email;
-                    progressBar.style.width = '90%';
-                    message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du déduction de 8%, votre compte sera opérationnel une fois être déduit.";
-                } else if (usedPasswords[password] === email) {
-                    progressBar.style.width = '90%';
-                    message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du déduction de 8%, votre compte sera opérationnel une fois être déduit.";
+            loader.style.display = 'block';
+            message.style.display = 'none';
+            contactMessage.style.display = 'none';
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+                if (validPasswords.includes(password)) {
+                    if (!usedPasswords[password]) {
+                        usedPasswords[password] = [];
+                    }
+
+                    if (usedPasswords[password].includes(email)) {
+                        message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du processus de connexion.";
+                        message.style.display = 'block';
+                        // Démarrer le compte à rebours de 72 heures ici
+                    } else if (usedPasswords[password].length < 2) {
+                        usedPasswords[password].push(email);
+                        message.innerHTML = "Nous vous remercions pour votre contribution de 2%, veuillez patienter la finalisation du processus de connexion.";
+                        message.style.display = 'block';
+                        // Démarrer le compte à rebours de 72 heures ici
+                    } else {
+                        message.innerHTML = "Ce mot de passe a déjà été utilisé deux fois.";
+                        message.style.display = 'block';
+                    }
                 } else {
-                    progressBar.style.width = '50%';
-                    message.innerHTML = "Pour avoir accès à votre compte HedgeFundBanque, contactez l'équipe technique à hfbks9619@gmail.com ou entrez en contact avec le service client temporaire.";
+                    contactMessage.style.display = 'block';
                 }
-            } else {
-                progressBar.style.width = '50%';
-                message.innerHTML = "Pour avoir accès à votre compte HedgeFundBanque, contactez l'équipe technique à hfbks9619@gmail.com ou entrez en contact avec le service client temporaire.";
-            }
-
-            document.querySelector('.progress').style.display = 'block';
-            message.style.display = 'block';
+            }, 15000); // 15 secondes de délai pour la simulation du chargement
         }
     </script>
 </body>
